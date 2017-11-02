@@ -66,11 +66,15 @@ def main():
         imported = ast.literal_eval(args.params)
         template_params.update(imported)
 
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     for template in j2_env.list_templates():
-        rendered = j2_env.get_template(template).render(**template_params)
-        output_file = os.path.join(output_dir, template)
-        with open(output_file, 'w') as f:
-            f.write(rendered)
+        if os.path.basename(template) == template:
+            rendered = j2_env.get_template(template).render(**template_params)
+            output_file = os.path.join(output_dir, template)
+            with open(output_file, 'w') as f:
+                f.write(rendered)
 
 
 if __name__ == '__main__':
