@@ -23,12 +23,13 @@ except ImportError:
 def main():
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument('--template-dir', '-t', default='templates/', help='Directory containing templates')
-    parser.add_argument('--output-dir', '-o', default='./', help='Directory to store output files')
+    parser.add_argument('--output-dir', '-o', default='./', help='Directory to store output file(s)')
 
     parser.add_argument('--skip-env', action='store_true', default=False, help='Do not import environment variables')
     parser.add_argument('--json', help='Import parameters from json file')
     parser.add_argument('--yaml', help='Import parameters from yaml file')
     parser.add_argument('--params', '-p', help='Import parameters from string (python dict format)')
+    parser.add_argument('--prefix', help='Prepend output file(s) with prefix')
     args = parser.parse_args()
 
     paths = ['template_dir', 'output_dir', 'json', 'yaml']
@@ -72,7 +73,8 @@ def main():
     for template in j2_env.list_templates():
         if os.path.basename(template) == template:
             rendered = j2_env.get_template(template).render(**template_params)
-            output_file = os.path.join(output_dir, template)
+            output_file_name = ''.join([args.prefix, template]) if args.prefix else template
+            output_file = os.path.join(output_dir, output_file_name)
             with open(output_file, 'w') as f:
                 f.write(rendered)
 
